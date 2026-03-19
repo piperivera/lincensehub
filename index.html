@@ -45,6 +45,13 @@
     }
   </script>
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007AFF">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="LicenseHub">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/styles.css?v=1773950685">
 </head>
 <body class="bg-bg text-primary min-h-screen font-sans antialiased" style="letter-spacing:-0.022em">
@@ -185,5 +192,14 @@
   </main>
 
   <script type="module" src="js/search.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/licensehub/sw.js')
+          .then(reg => console.log('SW registrado:', reg.scope))
+          .catch(err => console.warn('SW error:', err));
+      });
+    }
+  </script>
 </body>
 </html>
