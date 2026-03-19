@@ -1,164 +1,122 @@
-# LicenseHub — Comparador de Mayoristas Microsoft
+# LicenseHub - Comparador de Mayoristas Microsoft
 
 App web minimalista para comparar precios de licencias Microsoft entre **LOL**, **INTCOMEX** e **INGRAM**.
 
 ---
 
-## 🚀 Stack
+## Stack
 
 - **Frontend:** HTML + CSS + Vanilla JS (sin frameworks, 0 dependencias)
-- **Base de datos:** `products.json` estático (10,916 productos)
+- **Base de datos:** `products.json` estatico
 - **Hosting sugerido:** GitHub Pages, Netlify, Vercel o servidor local
 
 ---
 
-## 📁 Estructura del proyecto
+## Estructura del proyecto
 
-```
-licensehub/
-├── index.html          ← App principal (responsive, mobile-first)
-├── products.json       ← Base de datos de productos (generado del script)
-├── extract_data.py     ← Script para regenerar products.json desde Excel
+```text
+.
+├── index.html          <- solo estructura HTML
+├── css/
+│   └── styles.css      <- todos los estilos
+├── js/
+│   ├── search.js       <- busqueda, filtros y estado UI
+│   ├── tables.js       <- render de tablas y helpers visuales
+│   └── trm.js          <- carga automatica de TRM
+├── products.json       <- base de datos de productos
+├── extract_data.py     <- script para regenerar products.json
 ├── README.md
 └── .gitignore
 ```
 
 ---
 
-## ⚙️ Funcionalidades
+## Funcionalidades
 
-- 🔍 Búsqueda en tiempo real por nombre de producto
-- 🏷️ Filtros por tipo (NCE, Suscripción, Perpetuo), segmento y periodo
-- 📊 **Tabla por mayorista** (LOL / INTCOMEX / INGRAM) con comparación side-by-side
-- 💡 Indicador de **mejor precio** entre mayoristas
-- 💰 Configuración de **rentabilidad %** y **cantidad**
-- 💱 Conversión USD ↔ COP con TRM ajustable
-- 📱 Totalmente responsive (móvil y desktop)
+- Busqueda por nombre de producto
+- Filtros por tipo, segmento y periodo
+- Tabla por mayorista con comparacion lado a lado
+- Indicador de mejor precio entre mayoristas
+- Configuracion de rentabilidad, cantidad y moneda
+- Conversion USD a COP con TRM ajustable
+- Vista responsive para movil y desktop
 
 ---
 
-## 🛠️ Setup local
+## Setup local
 
 ```bash
-# 1. Clona el repo
-git clone https://github.com/TU_USUARIO/licensehub.git
-cd licensehub
+# Python
+python -m http.server 8080
 
-# 2. Serve localmente (necesitas un servidor HTTP, no abrir index.html directo por CORS)
-# Opción A — Python
-python3 -m http.server 8080
-
-# Opción B — Node.js
-npx serve .
-
-# Opción C — VS Code
-# Instala la extensión "Live Server" y haz clic en "Go Live"
-
-# 3. Abre http://localhost:8080
+# Luego abre
+http://localhost:8080
 ```
+
+Tambien puedes usar Live Server en VS Code o cualquier servidor HTTP estatico.
 
 ---
 
-## 🔄 Actualizar los datos de precios
+## Actualizar datos
 
 Cuando recibas nuevas listas de precios en Excel:
 
 ```bash
-# 1. Reemplaza los archivos Excel en la carpeta data/
-cp nuevas_listas/*.xlsx data/
+# 1. Reemplaza los archivos Excel en data/
 
 # 2. Regenera el JSON
-python3 extract_data.py
+python extract_data.py
 
-# 3. Commit y push
+# 3. Guarda y publica cambios
 git add products.json
-git commit -m "Update: listas de precios Abril 2026"
+git commit -m "Update: listas de precios"
 git push
 ```
 
 ---
 
-## 🌐 Deploy en GitHub Pages
+## Personalizacion
 
-```bash
-# 1. Crea el repositorio en GitHub
+### Cambiar rentabilidad por defecto
 
-# 2. Inicializa Git
-git init
-git add .
-git commit -m "Initial commit: LicenseHub"
+Busca en `index.html`:
 
-# 3. Conecta y sube
-git remote add origin https://github.com/TU_USUARIO/licensehub.git
-git branch -M main
-git push -u origin main
-
-# 4. En GitHub → Settings → Pages → Source: main / (root)
-# Tu app estará en: https://TU_USUARIO.github.io/licensehub
-```
-
----
-
-## 🌐 Deploy en Netlify (alternativa, más fácil)
-
-```bash
-# Opción A — Drop & Deploy
-# Ve a https://app.netlify.com/drop
-# Arrastra la carpeta del proyecto → listo
-
-# Opción B — Netlify CLI
-npm install -g netlify-cli
-netlify deploy --prod --dir .
-```
-
----
-
-## 🔧 Personalización
-
-### Cambiar el porcentaje de rentabilidad por defecto
-En `index.html`, busca:
 ```html
-<input type="number" id="profitPct" ... value="20" ...>
+<input type="number" id="profitPct" class="profit-input" value="20" min="0" max="999">
 ```
-Cambia `value="20"` al porcentaje que prefieras.
 
 ### Cambiar la TRM por defecto
+
+Busca en `index.html`:
+
 ```html
-<input type="number" id="trmInput" ... value="4200" ...>
+<input type="number" id="trmInput" class="profit-input wide-input" value="4200">
 ```
 
 ### Agregar un nuevo mayorista
-1. En `extract_data.py`, agrega la lógica de lectura del nuevo Excel
-2. Asegúrate de que cada producto tenga `distributor: "NUEVO_MAYORISTA"`
-3. En `index.html`, agrega el chip de filtro y el color en `DIST_COLORS`
+
+1. En `extract_data.py`, agrega la lectura del nuevo Excel.
+2. Asegurate de que cada producto tenga `distributor: "NUEVO_MAYORISTA"`.
+3. Agrega el nuevo chip y tab en `index.html`.
+4. Agrega el color del nuevo mayorista en `css/styles.css`.
+5. Registra el mayorista en `js/tables.js` y `js/search.js`.
 
 ---
 
-## 📝 .gitignore
-
-```
-*.xlsx
-__pycache__/
-.DS_Store
-node_modules/
-```
-
----
-
-## 📊 Estructura de `products.json`
+## Estructura de products.json
 
 ```json
 [
   {
-    "distributor": "LOL",           // LOL | INTCOMEX | INGRAM
-    "type": "NCE",                  // NCE | SUSCRIPCION | PERPETUO
+    "distributor": "LOL",
+    "type": "NCE",
     "partNumber": "CFQ7TTC...",
     "name": "Microsoft 365 Business Basic",
-    "term": "P1Y",                  // P1M | P1Y | P3Y | OneTime | Anual | Mensual
-    "billing": "Annual",            // Annual | Monthly | Triennial | OneTime
-    "price": 6.00,                  // Precio mayorista en USD
-    "erp": 8.00,                    // Precio sugerido de reventa (cuando aplica)
-    "segment": "Commercial"         // Commercial | Education | Charity
+    "term": "P1Y",
+    "billing": "Annual",
+    "price": 6.0,
+    "erp": 8.0,
+    "segment": "Commercial"
   }
 ]
 ```
