@@ -1,6 +1,6 @@
 {
-  "name": "LicenseHub - Comparador de Mayoristas",
-  "short_name": "LicenseHub",
+  "name": "LincenseHub - Comparador de Mayoristas",
+  "short_name": "LincenseHub",
   "description": "Compara precios de licencias Microsoft entre LOL, INTCOMEX e INGRAM",
   "start_url": "/lincensehub/",
   "scope": "/lincensehub/",
