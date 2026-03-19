@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LicenseHub — Comparador de Mayoristas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c28;
+    --border: #2a2a3d;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --lol: #ff6b6b;
+    --intcomex: #ffa94d;
+    --ingram: #4dabf7;
+    --green: #51cf66;
+    --red: #ff6b6b;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+  .nav-info { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* MAIN LAYOUT */
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 16px; }
+
+  /* SEARCH BAR */
+  .search-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .search-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .search-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .search-field { flex: 1; min-width: 200px; }
+  .search-field label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+  select.search-input { cursor: pointer; }
+  .search-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+    white-space: nowrap;
+    align-self: flex-end;
+  }
+  .search-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .search-btn:active { transform: translateY(0); }
+
+  /* FILTERS ROW */
+  .filters-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .filter-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    user-select: none;
+  }
+  .filter-chip.active {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.1);
+    color: #a8a3ff;
+  }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+  /* RESULTS AREA */
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .results-count { font-size: 13px; color: var(--muted); }
+  .results-count span { color: var(--text); font-weight: 500; }
+
+  /* PROFIT CONTROLS */
+  .profit-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .profit-label { font-size: 12px; color: var(--muted); white-space: nowrap; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .profit-input-group { display: flex; align-items: center; gap: 8px; }
+  .profit-input {
+    width: 80px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .profit-input:focus { border-color: var(--accent2); }
+  .qty-input {
+    width: 70px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    outline: none;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+  .qty-input:focus { border-color: var(--accent2); }
+
+  /* DISTRIBUTOR TABLES */
+  .tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+  .dist-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .dist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dist-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .dist-badge {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .dist-count { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .dist-table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  th.right { text-align: right; }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(42,42,61,0.5);
+    vertical-align: top;
+    line-height: 1.4;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(108,99,255,0.03); }
+  .td-right { text-align: right; font-family: 'DM Mono', monospace; }
+  .td-name { max-width: 200px; }
+  .td-name .prod-name { font-weight: 500; color: var(--text); }
+  .td-name .prod-seg {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .price-cell { font-family: 'DM Mono', monospace; font-weight: 500; }
+  .profit-cell {
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+  }
+  .profit-positive { color: var(--green); }
+  .profit-negative { color: var(--red); }
+  .tag-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+  .tag-nce { background: rgba(108,99,255,0.15); color: #a8a3ff; }
+  .tag-subs { background: rgba(0,212,170,0.15); color: #00d4aa; }
+  .tag-perp { background: rgba(255,169,77,0.15); color: #ffa94d; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 64px 24px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 18px; font-weight: 500; margin-bottom: 8px; color: var(--text); }
+  .empty-state p { font-size: 14px; }
+
+  /* LOADING */
+  .loading {
+    text-align: center;
+    padding: 48px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* BEST PRICE HIGHLIGHT */
+  .best-price td { background: rgba(81,207,102,0.04) !important; }
+  .best-badge {
+    display: inline-block;
+    background: rgba(81,207,102,0.15);
+    color: var(--green);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* RESULTS LIMIT NOTE */
+  .limit-note {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    padding: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .tables-grid { grid-template-columns: 1fr; }
+    .search-row { flex-direction: column; }
+    .search-field { min-width: unset; }
+    nav { padding: 12px 16px; }
+  }
+
+  /* SUMMARY BAR */
+  .summary-strip {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .summary-card {
+    flex: 1;
+    min-width: 140px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+  }
+  .summary-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .summary-val { font-size: 20px; font-weight: 600; font-family: 'DM Mono', monospace; }
+  .summary-val.green { color: var(--green); }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    LicenseHub
+  </div>
+  <div class="nav-info" id="totalCount">Cargando datos...</div>
+</nav>
+
+<div class="container">
+
+  <!-- SEARCH SECTION -->
+  <div class="search-section">
+    <div class="search-title">Buscar licencias</div>
+    <div class="search-row">
+      <div class="search-field" style="flex:2; min-width:260px;">
+        <label>Nombre del producto</label>
+        <input type="text" id="searchInput" class="search-input" placeholder="Ej: Microsoft 365, Office, Teams...">
+      </div>
+      <div class="search-field">
+        <label>Tipo</label>
+        <select id="typeFilter" class="search-input">
+          <option value="">Todos los tipos</option>
+          <option value="NCE">NCE</option>
+          <option value="SUSCRIPCION">Suscripción</option>
+          <option value="PERPETUO">Perpetuo</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>Segmento</label>
+        <select id="segFilter" class="search-input">
+          <option value="">Todos</option>
+          <option value="Commercial">Commercial</option>
+          <option value="Education">Education</option>
+          <option value="Charity">Charity</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>Periodo</label>
+        <select id="termFilter" class="search-input">
+          <option value="">Todos</option>
+          <option value="P1M">Mensual (P1M)</option>
+          <option value="P1Y">Anual (P1Y)</option>
+          <option value="P3Y">Trianual (P3Y)</option>
+          <option value="Anual">Anual</option>
+          <option value="Mensual">Mensual</option>
+          <option value="OneTime">One Time</option>
+        </select>
+      </div>
+      <button class="search-btn" onclick="runSearch()">Buscar</button>
+    </div>
+
+    <div class="filters-row">
+      <div class="filter-chip active" data-dist="LOL" onclick="toggleDist(this)">
+        <span class="chip-dot" style="background:var(--lol)"></span> LOL
+      </div>
+      <div class="filter-chip active" data-dist="INTCOMEX" onclick="toggleDist(this)">
+        <span class="chip-dot" style="background:var(--intcomex)"></span> INTCOMEX
+      </div>
+      <div class="filter-chip active" data-dist="INGRAM" onclick="toggleDist(this)">
+        <span class="chip-dot" style="background:var(--ingram)"></span> INGRAM
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFIT CONTROLS -->
+  <div class="profit-bar">
+    <div class="profit-label">Configurar cotización</div>
+    <div class="profit-input-group">
+      <label style="font-size:12px;color:var(--muted)">Rentabilidad %</label>
+      <input type="number" id="profitPct" class="profit-input" value="20" min="0" max="999" oninput="renderTables()">
+      <span style="font-size:12px;color:var(--muted)">%</span>
+    </div>
+    <div class="profit-input-group">
+      <label style="font-size:12px;color:var(--muted)">Cantidad</label>
+      <input type="number" id="qtyInput" class="qty-input" value="1" min="1" oninput="renderTables()">
+      <span style="font-size:12px;color:var(--muted)">uds</span>
+    </div>
+    <div class="profit-input-group">
+      <label style="font-size:12px;color:var(--muted)">Moneda</label>
+      <select id="currencySelect" class="search-input" style="width:90px" onchange="renderTables()">
+        <option value="USD">USD</option>
+        <option value="COP">COP</option>
+      </select>
+    </div>
+    <div class="profit-input-group">
+      <label style="font-size:12px;color:var(--muted)">TRM</label>
+      <input type="number" id="trmInput" class="profit-input" style="width:100px" value="4200" oninput="renderTables()">
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="resultsArea">
+    <div class="empty-state">
+      <div class="icon">🔍</div>
+      <h3>Busca una licencia</h3>
+      <p>Escribe el nombre del producto y presiona Buscar</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let PRODUCTS = [];
+let activeDists = new Set(['LOL','INTCOMEX','INGRAM']);
+let currentResults = { LOL: [], INTCOMEX: [], INGRAM: [] };
+
+// Load data
+fetch('products.json')
+  .then(r => r.json())
+  .then(data => {
+    PRODUCTS = data;
+    document.getElementById('totalCount').textContent =
+      `${data.length.toLocaleString()} productos · 3 mayoristas`;
+  })
+  .catch(() => {
+    document.getElementById('totalCount').textContent = 'Error cargando datos';
+  });
+
+function toggleDist(el) {
+  const dist = el.dataset.dist;
+  if (activeDists.has(dist)) {
+    if (activeDists.size > 1) { activeDists.delete(dist); el.classList.remove('active'); }
+  } else {
+    activeDists.add(dist); el.classList.add('active');
+  }
+  renderTables();
+}
+
+document.getElementById('searchInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') runSearch();
+});
+
+function runSearch() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const type = document.getElementById('typeFilter').value;
+  const seg = document.getElementById('segFilter').value;
+  const term = document.getElementById('termFilter').value;
+
+  if (!q) {
+    document.getElementById('resultsArea').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <h3>Escribe algo para buscar</h3>
+        <p>Ej: Microsoft 365 Business Basic</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('resultsArea').innerHTML = `
+    <div class="loading"><div class="spinner"></div>Buscando...</div>`;
+
+  setTimeout(() => {
+    const words = q.split(/\s+/).filter(Boolean);
+    const filtered = PRODUCTS.filter(p => {
+      const name = p.name.toLowerCase();
+      const matches = words.every(w => name.includes(w));
+      if (!matches) return false;
+      if (type && p.type !== type) return false;
+      if (seg && !p.segment.toLowerCase().includes(seg.toLowerCase())) return false;
+      if (term && !p.term.includes(term) && !p.billing.includes(term)) return false;
+      return true;
+    });
+
+    currentResults = { LOL: [], INTCOMEX: [], INGRAM: [] };
+    for (const p of filtered) {
+      if (currentResults[p.distributor] !== undefined) {
+        currentResults[p.distributor].push(p);
+      }
+    }
+
+    renderTables();
+  }, 30);
+}
+
+function getPriceDisplay(price, currency, trm) {
+  if (currency === 'COP') return '$' + Math.round(price * trm).toLocaleString('es-CO');
+  return '$' + price.toFixed(2);
+}
+
+function renderTables() {
+  const profitPct = parseFloat(document.getElementById('profitPct').value) || 0;
+  const qty = parseInt(document.getElementById('qtyInput').value) || 1;
+  const currency = document.getElementById('currencySelect').value;
+  const trm = parseFloat(document.getElementById('trmInput').value) || 4200;
+
+  const totalFound = Object.values(currentResults).reduce((a, b) => a + b.length, 0);
+  if (totalFound === 0 && document.getElementById('resultsArea').querySelector('.loading')) {
+    document.getElementById('resultsArea').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">😕</div>
+        <h3>Sin resultados</h3>
+        <p>Intenta con términos más generales</p>
+      </div>`;
+    return;
+  }
+  if (totalFound === 0) return;
+
+  // Find best prices per product name for cross-dist comparison
+  const bestByName = {};
+  for (const [dist, prods] of Object.entries(currentResults)) {
+    if (!activeDists.has(dist)) continue;
+    for (const p of prods) {
+      const key = p.name;
+      if (!bestByName[key] || p.price < bestByName[key]) bestByName[key] = p.price;
+    }
+  }
+
+  let html = '';
+
+  // Summary strip
+  const allPrices = [];
+  for (const [dist, prods] of Object.entries(currentResults)) {
+    if (!activeDists.has(dist)) continue;
+    prods.forEach(p => allPrices.push(p.price));
+  }
+  if (allPrices.length > 0) {
+    const minP = Math.min(...allPrices);
+    const avgP = allPrices.reduce((a,b)=>a+b,0)/allPrices.length;
+    const saleMin = minP * (1 + profitPct/100) * qty;
+    html += `<div class="summary-strip">
+      <div class="summary-card">
+        <div class="summary-label">Precio mínimo</div>
+        <div class="summary-val">${getPriceDisplay(minP, currency, trm)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Precio promedio</div>
+        <div class="summary-val">${getPriceDisplay(avgP, currency, trm)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Venta mín. (x${qty})</div>
+        <div class="summary-val green">${getPriceDisplay(saleMin, currency, trm)}</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Resultados totales</div>
+        <div class="summary-val">${totalFound.toLocaleString()}</div>
+      </div>
+    </div>`;
+  }
+
+  const DIST_COLORS = { LOL: 'var(--lol)', INTCOMEX: 'var(--intcomex)', INGRAM: 'var(--ingram)' };
+  const LIMIT = 50;
+
+  html += `<div class="results-header">
+    <div class="results-count">Mostrando resultados por mayorista · <span>${Math.min(totalFound, LIMIT*3)}</span> productos</div>
+  </div>`;
+
+  html += '<div class="tables-grid">';
+
+  for (const dist of ['LOL','INTCOMEX','INGRAM']) {
+    if (!activeDists.has(dist)) continue;
+    const prods = currentResults[dist];
+    const shown = prods.slice(0, LIMIT);
+
+    html += `<div class="dist-card">
+      <div class="dist-header">
+        <div class="dist-name">
+          <div class="dist-badge" style="background:${DIST_COLORS[dist]}"></div>
+          ${dist}
+        </div>
+        <div class="dist-count">${prods.length} productos</div>
+      </div>
+      <div class="dist-table-wrap">`;
+
+    if (prods.length === 0) {
+      html += `<div style="padding:32px;text-align:center;color:var(--muted);font-size:13px;">Sin resultados para este mayorista</div>`;
+    } else {
+      html += `<table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Periodo</th>
+            <th class="right">P. Unit.</th>
+            <th class="right">Venta x${qty}</th>
+            <th class="right">Ganancia</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      for (const p of shown) {
+        const saleUnit = p.price * (1 + profitPct/100);
+        const saleTotal = saleUnit * qty;
+        const costTotal = p.price * qty;
+        const profit = saleTotal - costTotal;
+        const isBest = p.price === bestByName[p.name];
+
+        const typeTag = p.type === 'NCE' ? 'tag-nce' : p.type === 'SUSCRIPCION' ? 'tag-subs' : 'tag-perp';
+        const typeLabel = p.type === 'NCE' ? 'NCE' : p.type === 'SUSCRIPCION' ? 'SUBS' : 'PERP';
+
+        html += `<tr class="${isBest ? 'best-price' : ''}">
+          <td class="td-name">
+            <div class="prod-name">${escHtml(p.name.substring(0,70))}${isBest ? '<span class="best-badge">Mejor</span>' : ''}</div>
+            <div class="prod-seg"><span class="tag-pill ${typeTag}">${typeLabel}</span> ${escHtml(p.segment)}</div>
+          </td>
+          <td><span style="font-size:12px;color:var(--muted)">${formatTerm(p.term)} / ${formatBilling(p.billing)}</span></td>
+          <td class="td-right price-cell">${getPriceDisplay(p.price, currency, trm)}</td>
+          <td class="td-right price-cell" style="color:var(--accent2)">${getPriceDisplay(saleTotal, currency, trm)}</td>
+          <td class="td-right profit-cell ${profit >= 0 ? 'profit-positive' : 'profit-negative'}">${getPriceDisplay(profit, currency, trm)}</td>
+        </tr>`;
+      }
+
+      html += '</tbody></table>';
+      if (prods.length > LIMIT) {
+        html += `<div class="limit-note">Mostrando ${LIMIT} de ${prods.length} — refina la búsqueda para ver más</div>`;
+      }
+    }
+
+    html += '</div></div>';
+  }
+
+  html += '</div>';
+  document.getElementById('resultsArea').innerHTML = html;
+}
+
+function formatTerm(t) {
+  const m = { P1M:'Mensual', P1Y:'Anual', P3Y:'Trianual', OneTime:'One Time', Anual:'Anual', Mensual:'Mensual', nan:'—', NaN:'—' };
+  return m[t] || t || '—';
+}
+function formatBilling(b) {
+  const m = { Monthly:'Mes', Annual:'Año', Triennial:'Trienal', OneTime:'Único', Anual:'Año', Mensual:'Mes', nan:'—', NaN:'—' };
+  return m[b] || b || '—';
+}
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
