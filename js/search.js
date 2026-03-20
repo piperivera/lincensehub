@@ -136,11 +136,15 @@ async function loadProducts() {
           .map(enrichProduct)
       : [];
 
-    elements.totalCount.textContent = `${state.products.length.toLocaleString("es-CO")} productos - 3 mayoristas`;
+    if (elements.totalCount) {
+      elements.totalCount.textContent = `${state.products.length.toLocaleString("es-CO")} productos - 3 mayoristas`;
+    }
   } catch (error) {
     state.products = [];
     state.loadError = true;
-    elements.totalCount.textContent = "Error cargando datos";
+    if (elements.totalCount) {
+      elements.totalCount.textContent = "Error cargando datos";
+    }
   } finally {
     state.isLoadingProducts = false;
     updateSearchSuggestions();

@@ -57,15 +57,11 @@
 <body class="bg-bg text-primary min-h-screen font-sans antialiased" style="letter-spacing:-0.022em">
 
   <!-- NAV -->
-  <nav class="sticky top-0 z-50 flex items-center justify-between px-6 h-[52px]
+  <nav class="sticky top-0 z-50 flex items-center px-6 h-[52px]
               bg-white/70 backdrop-blur-sm border-b border-sep/50">
     <div class="flex items-center gap-2 text-[15px] font-semibold tracking-tight">
       <div class="w-2.5 h-2.5 rounded-full bg-action flex-shrink-0"></div>
       LicenseHub
-    </div>
-    <div id="totalCount"
-         class="text-[11px] font-medium text-muted bg-bg px-3 py-1 rounded-chip border border-sep">
-      Cargando datos...
     </div>
   </nav>
 
@@ -80,7 +76,7 @@
         <div id="searchComposer" class="flex flex-col gap-1 flex-[2] min-w-[200px] relative">
           <label for="searchInput" class="text-[11px] font-medium text-muted">Nombre del producto</label>
           <input type="text" id="searchInput" class="search-input"
-                 placeholder="Escribe y selecciona varios productos para comparar"
+                 placeholder="Ej: Microsoft 365 Business Standard"
                  autocomplete="off">
           <div id="searchSuggestions" class="search-suggestions" hidden></div>
         </div>
